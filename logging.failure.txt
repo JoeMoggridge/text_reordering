@@ -1,0 +1,25 @@
+==========================
+desired format:
+========================
+Logging.Failure("test error message" + ErrorValue,  strExpectedValue,   strActualValue );
+or:
+Logging.Failure("test error message" + ErrorValue,  intExpectedValue.ToString() ,   intActualValue.ToString() );
+or some other data type
+
+=======================
+potential input formats:
+==========================
+
+Logging.Failure("test error message" + ErrorValue + "Actual value:" + strActualValue + "Expected value:" + strExpectedValue);
+Logging.Failure("test error message '" + ErrorValue + "' Actual value:" + strActualValue + "' Expected value: '"+strExpectedValue+ "'");
+
+Logging.Failure("test error message" + ErrorValue + "Actual value:" + intActualValue + "Expected value:" + intExpectedValue);
+Logging.Failure("test error message '" + ErrorValue + "' Actual value:" + intActualValue + "' Expected value: '" + intExpectedValue + "'");
+
+
+Logging.Failure("test error message" + ErrorValue + "Expected value:" + strExpectedValue+ "Actual value:" + strActualValue );
+
+Logging.Failure("test error message" + ErrorValue + "Expected value:" + intExpectedValue+ "Actual value:" + intActualValue );
+
+
+
