@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+import fileinput
 
 def get_file():
 	myfile = open("Logging.Failure.txt", "r+")
@@ -66,42 +67,45 @@ def stringify (inputline):
 
 # main
 #==============
-with open("Logging.Failure.txt", "r+") as MyFile:
+
+#with open("Logging.Failure.txt", "r+") as MyFile:
 
 
-    print ("---> Input file succesfully opened.\n")
-    i=0
+    #print ("---> Input file succesfully opened.\n")
+i=0
     #pos= MyFile.seek(0)
 
-    for line in MyFile :
-         i += 1
+for line in fileinput.input("logging.failure.txt", inplace=1):
+    #for line in MyFile :
+     i += 1
 
         # pos= MyFile.tell()
          #print (pos)
 
-         if i > 1 :
+     if i > 1 :
 
-            #1) process line
-            result = process_line(line)
+        #1) process line
+        result = process_line(line)
 
-            if result == "line processing failed" :
-                print("for line " +str(i)+ ", processing failed!")
+        if result == "line processing failed" :
+            sys.stdout.write("for line " +str(i)+ ", processing failed!")
+            #print("for line " +str(i)+ ", processing failed!")
 
-            elif result == "line does not match" :
-                print("line " + str(i) + ": does not match")
+        elif result == "line does not match" :
+            print("line " + str(i) + ": does not match")
 
-            else:
-                MyFile.writeline( result+"\n")
-                print("line " + str(i) + " overwriting with: "+ result)
+        else:
+            line = result
+            print("line " + str(i) + " overwriting with: "+ result)
 
-            #2) stringify
-            result= stringify(line)
-            if result== "no match on this line":
-                print("stringify: line " + str(i) + ": does not match ")
-            else:
-                #print(result, file=MyFile, flush=True)
-                MyFile.writeline (result)
-                print("stringify: line " + str(i) + " overwriting with: " + result)
+        #2) stringify
+        result= stringify(line)
+        if result== "no match on this line":
+            print("stringify: line " + str(i) + ": does not match ")
+        else:
+            #print(result, file=MyFile, flush=True)
+            line=result
+            print("stringify: line " + str(i) + " overwriting with: " + result)
 
     #cleanup
-    MyFile.close()
+     #MyFile.close()
