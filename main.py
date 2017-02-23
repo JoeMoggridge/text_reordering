@@ -1,7 +1,7 @@
 import sys
 import os
 import re
-import fileinput
+
 
 def get_file():
 	myfile = open("Logging.Failure.txt", "r+")
@@ -11,10 +11,10 @@ def process_line (inputline) :
 
 #(((?#optionalerrorcode)\\+(.+))*)(.*)
 #'Logging\\.Failure\\(((?#errortext).+)(.*)\\+((?#txt).+)\\+((?#value).+)\\+((?#txt).+)\\+((?#value).+)\\);'
-    MyRegex1 = re.compile('Logging\\.Failure\\((.{5,50}?)(\\+(.{5,20}))?\\+(.{5,50}?)\\+(.{5,20}?)\\+(.{5,50}?)\\+(.{5,20})?\\+(.{5,20})?\\);')
+    MyRegex1 = re.compile('Logging\\.Failure\\((.{5,100}?)(\\+(.{5,30}))?\\+(.{5,50}?)\\+(.{5,30}?)\\+(.{5,50}?)\\+(.{5,30})?\\+(.{3,20})?\\);')
     searchforstart = re.compile('Logging\\.Failure\\((.{5,50})?\\+')
-    searchforexpected = re.compile('\\+(.{0,2})(Expected (Value|value|.))(.{0,2})\\+(?P<expectedvariable>.+)\\+')
-    searchforactual = re.compile  ('\\+(.{0,2})(Actual (Value|value|.))(.{0,2})\\+(?P<actualvariable>.+)\\+')
+    searchforexpected = re.compile('\\+(.{1,5})((E|e)xpected (((V|v)alue)|(.{2,10})))(.{1,5})\\+(?P<expectedvariable>.{5,20})(\\+|\\))')
+    searchforactual = re.compile  ('\\+(.{1,5})((A|a)ctual (((V|v)alue)|(.{2,10})))(.{1,5})\\+(?P<actualvariable>.{5,20})(\\+|\\))')
 
     matchedline = re.search(MyRegex1, inputline)
     if(not matchedline):
@@ -40,27 +40,25 @@ def process_line (inputline) :
 
 def stringify (inputline):
     #adds .ToString() to variables, if required
-    MyRegEx2 = re.compile('Logging\\.Failure\\((?P<msgError>.+)(.*)((\\+(?P<valError>.+))*)(.*),(?P<valExpected>.+),(?P<valActual>.+)\\);')
+    MyRegEx2 = re.compile('Logging\\.Failure\\((?P<msgError>.{5,100})?(.{1,5})((\\+(?P<valError>.{5,50}))*)(.{1,5}),(?P<valExpected>.{5,30})?,(?P<valActual>.{5,30})?\\);')
 
     MyResult = re.search(MyRegEx2, inputline)
 
     if MyResult:
 
-        matchedexpected = MyResult.group('valExpected')
-        matchedactual = MyResult.group('valActual')
+        s_matchedexpected = MyResult.group('valExpected')
+        s_matchedactual = MyResult.group('valActual')
 
-        #if either of the matched arguments do not start with "str", then add the ".ToString()" method on the end.
+        #if either of the matched arguments do not start with "str", then add the ".ToString()" method on the endof both
+        s_matchedexpected = s_matchedexpected.strip()
+        s_matchedactual = s_matchedactual.strip()
+        if (not re.match('str', s_matchedexpected)) or (not re.match('str', s_matchedactual)):
+            s_matchedexpected = s_matchedexpected.strip()
+            s_matchedexpected = s_matchedexpected+".ToString()"
+            s_matchedactual = s_matchedactual.strip()
+            s_matchedactual = s_matchedactual+".ToString()"
 
-        if not re.match('str', matchedexpected):
-            matchedexpected.strip()
-            matchedexpected = matchedexpected+".ToString()"
-
-        if not re.match('str', matchedactual):
-            matchedactual.strip()
-            matchedactual = matchedactual+".ToString()"
-
-        return "Logging.Failure(" + MyResult.group('msgError')+ " + " +MyResult.group('msgError') + \
-                                                                " , " + matchedexpected + " , " + matchedactual + ");"
+        return "Logging.Failure(" + MyResult.group('msgError') +" , " + s_matchedexpected + " , " + s_matchedactual + ");"
 
     else:
         return "no match on this line"
@@ -68,44 +66,63 @@ def stringify (inputline):
 # main
 #==============
 
-#with open("Logging.Failure.txt", "r+") as MyFile:
+#firstly, reorder the arguments
+with open("Logging.Failure.txt", "r") as InFile:
+    with open("Logging.Failure_tmp.txt", "w") as OutFile:
+
+        print("---> Input file succesfully opened.\n")
+        line_num =0
+        #pos= MyFile.seek(0)
+
+        for line in InFile:
+
+             line_num += 1
+
+            # pos= MyFile.tell()
+            #print (pos)
+
+             if line_num > 0 :
+
+                #1) process line
+                result = process_line(line)
+
+                if result == "line processing failed" :
+                    print("for line " +str(line_num)+ ", processing failed!")
+                    OutFile.write(line)
 
 
-    #print ("---> Input file succesfully opened.\n")
-i=0
-    #pos= MyFile.seek(0)
+                elif result == "line does not match" :
+                    print("line " + str(line_num) + ": does not match")
+                    OutFile.write(line)
 
-for line in fileinput.input("logging.failure.txt", inplace=1):
-    #for line in MyFile :
-     i += 1
+                else:
+                    print("line " + str(line_num) + " overwriting with: "+ result)
+                    OutFile.write(result+"\n")
 
-        # pos= MyFile.tell()
-         #print (pos)
+    OutFile.close()
+InFile.close()
 
-     if i > 1 :
+# next, add .Tostring(), if required
+with open("Logging.Failure_tmp.txt", "r") as InFile:
+    with open("Logging.Failure_out.txt", "w") as OutFile:
 
-        #1) process line
-        result = process_line(line)
+        line_num = 0
 
-        if result == "line processing failed" :
-            sys.stdout.write("for line " +str(i)+ ", processing failed!")
-            #print("for line " +str(i)+ ", processing failed!")
+        for stringy_ln in InFile:
 
-        elif result == "line does not match" :
-            print("line " + str(i) + ": does not match")
+            line_num += 1
 
-        else:
-            line = result
-            print("line " + str(i) + " overwriting with: "+ result)
-
-        #2) stringify
-        result= stringify(line)
-        if result== "no match on this line":
-            print("stringify: line " + str(i) + ": does not match ")
-        else:
-            #print(result, file=MyFile, flush=True)
-            line=result
-            print("stringify: line " + str(i) + " overwriting with: " + result)
+            #2) stringify
+            result= stringify(stringy_ln)
+            if result== "no match on this line":
+                print("stringify: line " + str(line_num) + ": does not match ")
+                OutFile.write(stringy_ln)
+            else:
+                #print(result, file=MyFile, flush=True)
+                OutFile.write(result+"\n")
+                print("stringify: line " + str(line_num) + " overwriting with: " + result)
 
     #cleanup
-     #MyFile.close()
+    OutFile.close()
+InFile.close()
+os.remove("Logging.Failure_tmp.txt")
