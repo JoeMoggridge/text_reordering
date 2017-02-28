@@ -1,0 +1,393 @@
+                        Logging.Failure("Failed: Recipient Suppressed for Campaign Name:'" + strCampaignName + " ' ",  intExpectedRecipientSuppressed ,  intActualValue   );
+
+               public static void ListTotalAPI(string strCampaignName, int intExpectedListTotal)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].ListTotal;
+
+                if (intActualValue == intExpectedListTotal)
+                {
+                    Logging.Success("Passed: List Total for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: List Total for Campaign Name:'" + strCampaignName + " ' " , intExpectedListTotal , intActualValue);
+                }
+            }
+
+            public static void ChannelAPI(string strCampaignName, string strExpectedChannel)
+            {
+                string strActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Channel;
+
+                if (strActualValue == strExpectedChannel)
+                {
+                    Logging.Success("Passed: Source for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Source for Campaign Name:'" + strCampaignName + " ' " , strExpectedChannel , strActualValue);
+                }
+
+            }
+
+            public static void ScheduledAPI(string strCampaignName, DateTime dtExpectedScheduled)
+            {
+                DateTime dtActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Scheduled;
+                dtActualValue = new DateTime(dtActualValue.Year, dtActualValue.Month, dtActualValue.Day, dtActualValue.Hour, dtActualValue.Minute, dtActualValue.Second);
+                dtExpectedScheduled = new DateTime(dtExpectedScheduled.Year, dtExpectedScheduled.Month, dtExpectedScheduled.Day, dtExpectedScheduled.Hour, dtExpectedScheduled.Minute, dtExpectedScheduled.Second);
+
+                if ((dtActualValue - dtExpectedScheduled).Duration().TotalMinutes < 3)
+                {
+                    Logging.Success("Passed: Scheduled date for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Scheduled date for Campaign Name:'" + strCampaignName + " ' " , dtExpectedScheduled.ToString() , dtActualValue.ToString());
+                }
+
+            }
+
+            public static void StartedAPI(string strCampaignName, DateTime dtExpectedStarted, bool blnIsBlank = false)
+            {
+                DateTime? dtActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Started;
+
+                if (blnIsBlank)
+                {
+                    if (dtActualValue == null)
+                    {
+                        Logging.Success("Passed: Started date for Campaign Name:" + strCampaignName);
+                        return;
+                    }
+                }
+                else
+                {
+                    if (dtActualValue != null)
+                    {
+                        DateTime dtActualTime = new DateTime(dtActualValue.Value.Year, dtActualValue.Value.Month, dtActualValue.Value.Day, dtActualValue.Value.Hour, dtActualValue.Value.Minute, 0);
+
+                        if ((dtActualTime - dtExpectedStarted).Duration().TotalMinutes < 3)
+                        {
+                            Logging.Success("Passed: Started date for Campaign Name:" + strCampaignName);
+                            return;
+                        }
+                    }
+                }
+
+                Logging.Failure("Failed: Started date for Campaign Name:'" + strCampaignName + " ' " , dtExpectedStarted.ToString() , dtActualValue.ToString());
+
+            }
+
+            public static void FinishedAPI(string strCampaignName, DateTime dtExpectedFinished)
+            {
+                DateTime? dtActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Finished;
+                if (dtActualValue != null)
+                {
+                    DateTime dtActualTime = new DateTime(dtActualValue.Value.Year, dtActualValue.Value.Month, dtActualValue.Value.Day, dtActualValue.Value.Hour, dtActualValue.Value.Minute, 0);
+
+                    if ((dtActualTime - dtExpectedFinished).Duration().TotalMinutes < 5)
+                    {
+                        Logging.Success("Passed: Finished date for Campaign Name:" + strCampaignName);
+                        return;
+                    }
+                }
+                Logging.Failure("Failed: Finished date for Campaign Name:'" + strCampaignName + " ' " , dtExpectedFinished.ToString() , dtActualValue.ToString());
+
+            }
+
+
+
+            public static void ProcessedAPI(string strCampaignName, int intExpectedProcessed)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Processed;
+
+                if (intActualValue == intExpectedProcessed)
+                {
+                    Logging.Success("Passed: Processed for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Processed for Campaign Name:'" + strCampaignName + " ' " , intExpectedProcessed , intActualValue);
+                }
+            }
+
+            public static void SubmittedAPI(string strCampaignName, int intExpectedSubmitted)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Submitted;
+
+                if (intActualValue == intExpectedSubmitted)
+                {
+                    Logging.Success("Passed: Submitted for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Submitted for Campaign Name:'" + strCampaignName + " ' " , intExpectedSubmitted , intActualValue);
+                }
+            }
+
+            public static void QueuedAPI(string strCampaignName, int intExpectedQueued)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Queued;
+
+                if (intActualValue == intExpectedQueued)
+                {
+                    Logging.Success("Passed: Queued for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Queued for Campaign Name:'" + strCampaignName + " ' " , intExpectedQueued , intActualValue);
+                }
+            }
+
+            public static void PercentDoneAPI(string strCampaignName, int intExpectedPercentDone)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].PercentComplete;
+
+                if (intActualValue == intExpectedPercentDone)
+                {
+                    Logging.Success("Passed: Percent Done for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Percent Done for Campaign Name:'" + strCampaignName + " ' " , intExpectedPercentDone , intActualValue);
+                }
+            }
+
+            public static void ThrottleAPI(string strCampaignName, string strExpectedThrottle)
+            {
+                string strActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Throttle;
+
+                if (strActualValue == strExpectedThrottle)
+                {
+                    Logging.Success("Passed: Throttle for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Throttle for Campaign Name:'" + strCampaignName + " ' " , strExpectedThrottle , strActualValue);
+                }
+
+            }
+
+            public static void ErrorsAPI(string strCampaignName, int intExpectedErrors)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].MailerErrors;
+
+                if (intActualValue == intExpectedErrors)
+                {
+                    Logging.Success("Passed: Errors for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Errors for Campaign Name:'" + strCampaignName + " ' " , intExpectedErrors , intActualValue);
+                }
+            }
+
+            public static void ListsAPI(string strCampaignName, string strExpectedLists)
+            {
+                string strActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Lists;
+
+                if (strActualValue == strExpectedLists)
+                {
+                    Logging.Success("Passed: Lists for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Lists for Campaign Name:'" + strCampaignName + " ' " , strExpectedLists , strActualValue);
+                }
+
+            }
+
+            public static void DeliveryContextAPI(string strCampaignName, string strExpectedDeliveryContext)
+            {
+                string strActualValue = (API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].DeliveryContext).ToLower();
+
+                if (strActualValue == strExpectedDeliveryContext)
+                {
+                    Logging.Success("Passed: Delivery Context for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Delivery Context for Campaign Name:'" + strCampaignName + " ' " , strExpectedDeliveryContext , strActualValue);
+                }
+
+            }
+
+            public static void CampaignOwnerAPI(string strCampaignName, string strExpectedCampaignOwner)
+            {
+                string strActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Owner;
+
+                if (strActualValue == strExpectedCampaignOwner)
+                {
+                    Logging.Success("Passed: Campaign Owner for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Campaign Owner for Campaign Name:'" + strCampaignName + " ' " , strExpectedCampaignOwner , strActualValue);
+                }
+
+            }
+
+            public static void CreatedAPI(string strCampaignName, DateTime dtExpectedCreated)
+            {
+                DateTime? dtActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Created;
+                if (dtActualValue != null)
+                {
+                    DateTime dtActualTime = new DateTime(dtActualValue.Value.Year, dtActualValue.Value.Month, dtActualValue.Value.Day, dtActualValue.Value.Hour, dtActualValue.Value.Minute, 0);
+
+                    if ((dtActualTime - dtExpectedCreated).Duration().TotalMinutes < 3)
+                    {
+                        Logging.Success("Passed: Created date for Campaign Name:" + strCampaignName);
+                        return;
+                    }
+                }
+                Logging.Failure("Failed: Created date for Campaign Name:'" + strCampaignName + " ' " , dtExpectedCreated.ToString() , dtActualValue.ToString());
+
+
+            }
+
+            public static void ModifiedAPI(string strCampaignName, DateTime dtExpectedModified)
+            {
+                DateTime? dtActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Modified;
+                if (dtActualValue != null)
+                {
+                    DateTime dtActualTime = new DateTime(dtActualValue.Value.Year, dtActualValue.Value.Month, dtActualValue.Value.Day, dtActualValue.Value.Hour, dtActualValue.Value.Minute, 0);
+
+                    if ((dtActualTime - dtExpectedModified).Duration().TotalMinutes < 3)
+                    {
+                        Logging.Success("Passed: Modified date for Campaign Name:" + strCampaignName);
+                        return;
+                    }
+                }
+                Logging.Failure("Failed: Modified date for Campaign Name:'" + strCampaignName + " ' " , dtExpectedModified.ToString() , dtActualValue.ToString());
+
+            }
+
+            public static void ListSuppressedAPI(string strCampaignName, int intExpectedListSuppressed)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].ListSuppressed;
+
+                if (intActualValue == intExpectedListSuppressed)
+                {
+                    Logging.Success("Passed: List Suppressed for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: List Suppressed for Campaign Name:'" + strCampaignName + " ' " , intExpectedListSuppressed , intActualValue);
+                }
+            }
+
+            public static void EventSuppressedAPI(string strCampaignName, int intExpectedEventSuppressed)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].EventSuppressed;
+
+                if (intActualValue == intExpectedEventSuppressed)
+                {
+                    Logging.Success("Passed: Event Suppressed for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Event Suppressed for Campaign Name:'" + strCampaignName + " ' " , intExpectedEventSuppressed , intActualValue);
+                }
+            }
+
+            public static void HealthSuppressedAPI(string strCampaignName, int intExpectedHealthSuppressed)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].HealthSuppressed;
+
+                if (intActualValue == intExpectedHealthSuppressed)
+                {
+                    Logging.Success("Passed: Health Suppressed for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Health Suppressed for Campaign Name:'" + strCampaignName + " ' " , intExpectedHealthSuppressed , intActualValue);
+                }
+            }
+
+            public static void RecipientSuppressedAPI(string strCampaignName, int intExpectedRecipientSuppressed)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].RecipientSuppressed;
+
+                if (intActualValue == intExpectedRecipientSuppressed)
+                {
+                    Logging.Success("Passed: Recipient Suppressed for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Recipient Suppressed for Campaign Name:'" + strCampaignName + " ' ",  intExpectedRecipientSuppressed ,  intActualValue   );
+                }
+            }
+
+            public static void FieldSuppressedAPI(string strCampaignName, int intExpectedFieldSuppressed)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].FieldSuppressed;
+
+                if (intActualValue == intExpectedFieldSuppressed)
+                {
+                    Logging.Success("Passed: Field Suppressed for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Field Suppressed for Campaign Name:'" + strCampaignName + " ' " , intExpectedFieldSuppressed , intActualValue);
+                }
+            }
+
+            public static void FromEmailAPI(string strCampaignName, string strExpectedFromEmail)
+            {
+                string strActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].FromEmail;
+
+                if (strActualValue == strExpectedFromEmail)
+                {
+                    Logging.Success("Passed: From Email for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: From Email for Campaign Name:'" + strCampaignName + " ' " , strExpectedFromEmail , strActualValue);
+                }
+
+            }
+
+            public static void FromAliasAPI(string strCampaignName, string strExpectedFromAlias)
+            {
+                string strActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].FromAlias;
+
+                if (strActualValue == strExpectedFromAlias)
+                {
+                    Logging.Success("Passed: From Alias for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: From Alias for Campaign Name:'" + strCampaignName + " ' " , strExpectedFromAlias , strActualValue);
+                }
+
+            }
+
+            public static void SubjectAPI(string strCampaignName, string strExpectedSubject)
+            {
+                string strActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].Subject;
+
+                if (strActualValue == strExpectedSubject)
+                {
+                    Logging.Success("Passed: Subject for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Subject for Campaign Name:'" + strCampaignName + " ' " , strExpectedSubject , strActualValue);
+                }
+            }
+
+            public static void DeploymentIdAPI(string strCampaignName, int intExpectedDeploymentId)
+            {
+                int intActualValue = API.CAM.GetCAMInfo()[GetRowIndex(strCampaignName)].DMDeploymentId;
+
+                if (intActualValue == intExpectedDeploymentId)
+                {
+                    Logging.Success("Passed: Deployment Id for Campaign Name:" + strCampaignName);
+                }
+                else
+                {
+                    Logging.Failure("Failed: Deployment Id for Campaign Name:'" + strCampaignName + " ' " , intExpectedDeploymentId , intActualValue);
+                }
+            }
+
+        }
+    }
+}

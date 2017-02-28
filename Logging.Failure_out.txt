@@ -1,0 +1,22 @@
+==========================
+desired format: 
+========================
+Logging.Failure("test error message" + ErrorVal , strExpectedValue , strActualValue);
+or:
+Logging.Failure("test error message" + ErrorVal , intExpectedValue.ToString().ToString() , intActualValue.ToString().ToString());
+or some other data type
+
+=======================
+potential input formats: 
+==========================
+
+Logging.Failure("test error message13" + ErrorValue  , strExpectedValue , strActualValue);
+Logging.Failure("test error message14 '" + ErrorValue  , strExpectedValue , strActualValue);
+
+Logging.Failure("test error message16" + ErrorValue  , intExpectedValue.ToString() , intActualValue.ToString());
+Logging.Failure("test error message17'" + ErrorValue  , intExpectedValue.ToString() , intActualValue.ToString());
+
+
+Logging.Failure("test error message20" + ErrorValue  , strExpectedValue , strActualValue);
+
+Logging.Failure("test error message22" + ErrorValue  , intExpectedValue.ToString() , intActualValue.ToString());
